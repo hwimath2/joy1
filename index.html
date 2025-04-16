@@ -1750,28 +1750,9 @@
       <div id="serverMessage" class="server-message"></div>
     </div>
   </div>
-  <!-- MathJax 추가 -->
   <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true
-      },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-        // 초기 렌더링 제한 설정 추가
-        ignoreHtmlClass: 'tex2jax_ignore',
-        processHtmlClass: 'has-latex'
-      }
-    };
-  </script>
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-  </script>
- <script>
   /* 텍스트 설정 */
-  const START_SCREEN_TITLE = "이름을 입력하고 게임을 시작하세요";  /* 시작 화면 제목 */
+  const START_SCREEN_TITLE = "이름을 입력하고 게임을 시작하세요";
   const PLAYER_NAME_PLACEHOLDER = "이름을 입력하세요";           /* 이름 입력 필드 플레이스홀더 */
   const START_BUTTON_TEXT = "게임시작";                  /* 시작 버튼 텍스트 */
   const NEXT_BUTTON_TEXT = "다음문제";                   /* 다음 버튼 텍스트 */
@@ -2027,44 +2008,13 @@
         const optDiv = document.createElement('div');
         optDiv.className = "option";
         optDiv.setAttribute("data-option", (index + 1).toString());
-
-        if (q.customOptions) {
-          // customOptions가 있는 경우에만 MathJax 렌더링 적용
-          optDiv.className = "option has-latex"; // has-latex 클래스 추가
-          let processedText = optText
-            .replace(/\\Wlim/g, '\\lim')
-            .replace(/\\Wto/g, '\\to')
-            .replace(/\\Winfty/g, '\\infty')
-            .replace(/\\Walpha/g, '\\alpha')
-            .replace(/\\Wbeta/g, '\\beta');
-
-          // 내부 span 엘리먼트 생성
-          const span = document.createElement('span');
-          span.innerHTML = `$${processedText}$`;
-          optDiv.appendChild(span);
-          
-          // MathJax 수동 렌더링 트리거
-          if (typeof MathJax !== 'undefined') {
-            MathJax.typesetPromise([optDiv]).catch((err) => {
-              console.error("MathJax rendering error:", err);
-              optDiv.textContent = optText;
-            });
-          } else {
-            console.warn("MathJax not loaded yet");
-            optDiv.textContent = optText;
-          }
-        } else {
-          // customOptions가 없는 경우 일반 텍스트로 표시
-          optDiv.textContent = optText;
-        }
-
+        optDiv.textContent = optText;
         optDiv.addEventListener('click', handleOptionClick);
         elements.multipleChoice.appendChild(optDiv);
       });
-      /* === KaTeX 렌더링 수정 끝 === */
 
       /* 복수정답 여부에 따라 확인 버튼 생성 */
-      if(Array.isArray(q.answer) && q.answer.length > 1) {
+      if (q.answer.length > 1 || q.type === "주관식") {
         createConfirmButton(handleMultipleChoiceCheck);
       }
     } else if(q.type === "주관식") {
