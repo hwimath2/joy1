@@ -44,7 +44,7 @@
           "https://github.com/hwimath2/imagrfile/blob/main/gmjsyghgs/3.png?raw=true"
         ],
         "passage": "",
-        "answer": "0",
+        "answer": ["1", "2"],
         "type": "주관식",
         "score": 10,
         "placeholders": ["수렴시[극한값], 발산시[발산]"]
@@ -1218,10 +1218,10 @@
       width: 0%;
       background-image: var(--progress-gradient);
       transition: width var(--progress-animation-duration) cubic-bezier(0.22,0.61,0.36,1.2);
-      border-radius: var(--progress-border-radius);
       position: relative;
       box-shadow: var(--box-shadow-light);
       overflow: hidden;
+      border-radius: 0 var(--progress-border-radius) var(--progress-border-radius) 0;
     }
 
     .progress-bar::before {
@@ -1239,10 +1239,10 @@
     .progress-bar::after {
       content: '';
       position: absolute;
-      top: -50%;
-      left: -100%;
+      top: 0;
+      left: -50%;
       width: 200%;
-      height: 200%;
+      height: 100%;
       background-image:
         repeating-linear-gradient(
           45deg,
@@ -1268,6 +1268,7 @@
     }
 
     .progress-indicator {
+      display: none;  /* 완전히 숨기기 */
       position: absolute;
       right: 10px;
       top: -25px;
@@ -1736,7 +1737,7 @@
           <div class="input-answer" id="shortAnswer"></div>
           <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
-            <div class="progress-indicator" id="progressIndicator">0/0</div>
+            <div class="progress-indicator" id="progressIndicator"></div>
           </div>
           <button class="btn" id="nextButton" disabled>다음문제</button>
         </div>
@@ -2421,6 +2422,9 @@
     elements.finalScore.innerHTML = `최종 점수: <strong style="color: var(--score-highlight-color); font-size: 1.2em;">${score}</strong>점 / ${maxScore}점`; // Highlight score
     elements.finalTime.textContent = `총 소요 시간: ${timerFunctions.formatTime(elapsedTime)}`;
 
+    // 축하 효과음 재생
+    ButtonSound.playCongratulations();
+
     // Reset submit button state
     elements.submitButton.disabled = false;
     elements.serverMessage.textContent = '';
@@ -2430,62 +2434,220 @@
   // 버튼 효과음 객체
   const ButtonSound = {
     context: null,
-
+    
     init() {
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         this.context = new AudioContext();
-
-        // document 레벨에서 모든 클릭 이벤트 감지
-        document.addEventListener('click', (e) => {
-          // 모든 가능한 버튼 선택자 포함
-          if ((e.target.matches('button') || 
-              e.target.matches('.btn') || 
-              e.target.matches('.option') || 
-              e.target.matches('#startButton') || 
-              e.target.matches('#nextButton') || 
-              e.target.matches('#checkButton') || 
-              e.target.matches('#submitButton')) && 
-              !e.target.disabled) {
-            this.play();
-          }
-        }, true);
-
-        // 자동 재생 정책 대응
-        document.addEventListener('click', () => {
-          if (this.context.state === 'suspended') {
-            this.context.resume();
-          }
-        }, { once: true });
-
-      } catch(e) {
+      } catch (e) {
         console.warn('Web Audio API is not supported in this browser');
       }
     },
 
-    play() {
+    playStartSound() {
       if (!this.context) return;
       
-      const osc = this.context.createOscillator();
+      // 첫 번째 시퀀스: 상승하는 화려한 아케이드 사운드
+      const osc1 = this.context.createOscillator();
+      const gain1 = this.context.createGain();
+      osc1.connect(gain1);
+      gain1.connect(this.context.destination);
+      
+      osc1.frequency.setValueAtTime(400, this.context.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(800, this.context.currentTime + 0.2);
+      gain1.gain.setValueAtTime(0.3, this.context.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.2);
+      
+      osc1.start(this.context.currentTime);
+      osc1.stop(this.context.currentTime + 0.2);
+      
+      // 두 번째 시퀀스: "띠디링" 효과
+      const osc2 = this.context.createOscillator();
+      const gain2 = this.context.createGain();
+      osc2.connect(gain2);
+      gain2.connect(this.context.destination);
+      
+      osc2.frequency.setValueAtTime(1200, this.context.currentTime + 0.2);
+      osc2.frequency.exponentialRampToValueAtTime(900, this.context.currentTime + 0.4);
+      gain2.gain.setValueAtTime(0.3, this.context.currentTime + 0.2);
+      gain2.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.4);
+      
+      osc2.start(this.context.currentTime + 0.2);
+      osc2.stop(this.context.currentTime + 0.4);
+      
+      // 세 번째 시퀀스: 화려한 마무리 효과
+      const osc3 = this.context.createOscillator();
+      const gain3 = this.context.createGain();
+      osc3.connect(gain3);
+      gain3.connect(this.context.destination);
+      
+      osc3.frequency.setValueAtTime(600, this.context.currentTime + 0.4);
+      osc3.frequency.exponentialRampToValueAtTime(1400, this.context.currentTime + 0.6);
+      gain3.gain.setValueAtTime(0.3, this.context.currentTime + 0.4);
+      gain3.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.8);
+      
+      osc3.start(this.context.currentTime + 0.4);
+      osc3.stop(this.context.currentTime + 0.8);
+      
+      // 반짝이는 효과음 추가
+      const sparkle = this.context.createOscillator();
+      const sparkleGain = this.context.createGain();
+      sparkle.connect(sparkleGain);
+      sparkleGain.connect(this.context.destination);
+      
+      sparkle.frequency.setValueAtTime(2000, this.context.currentTime + 0.6);
+      sparkle.frequency.exponentialRampToValueAtTime(3000, this.context.currentTime + 0.7);
+      sparkleGain.gain.setValueAtTime(0.2, this.context.currentTime + 0.6);
+      sparkleGain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.9);
+      
+      sparkle.start(this.context.currentTime + 0.6);
+      sparkle.stop(this.context.currentTime + 0.9);
+    },
+
+    playClickSound() {
+      if (!this.context) return;
+      
+      // 첫 번째 음: "띠" 소리
+      const osc1 = this.context.createOscillator();
+      const gain1 = this.context.createGain();
+      osc1.connect(gain1);
+      gain1.connect(this.context.destination);
+      
+      osc1.frequency.setValueAtTime(1200, this.context.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(800, this.context.currentTime + 0.1);
+      gain1.gain.setValueAtTime(0.3, this.context.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.1);
+      
+      osc1.start(this.context.currentTime);
+      osc1.stop(this.context.currentTime + 0.1);
+      
+      // 두 번째 음: "디링" 소리
+      const osc2 = this.context.createOscillator();
+      const gain2 = this.context.createGain();
+      osc2.connect(gain2);
+      gain2.connect(this.context.destination);
+      
+      osc2.frequency.setValueAtTime(600, this.context.currentTime + 0.1);
+      osc2.frequency.exponentialRampToValueAtTime(1000, this.context.currentTime + 0.2);
+      gain2.gain.setValueAtTime(0.3, this.context.currentTime + 0.1);
+      gain2.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.3);
+      
+      osc2.start(this.context.currentTime + 0.1);
+      osc2.stop(this.context.currentTime + 0.3);
+    },
+
+    playCongratulations() {
+      if (!this.context) return;
+      
+      // 폭죽 발사음 (휘이잉~)
+      const launch = this.context.createOscillator();
+      const launchGain = this.context.createGain();
+      launch.connect(launchGain);
+      launchGain.connect(this.context.destination);
+      
+      launch.frequency.setValueAtTime(300, this.context.currentTime);
+      launch.frequency.exponentialRampToValueAtTime(600, this.context.currentTime + 0.3);
+      launchGain.gain.setValueAtTime(0.3, this.context.currentTime);
+      launchGain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.3);
+      
+      launch.start(this.context.currentTime);
+      launch.stop(this.context.currentTime + 0.3);
+
+      // 폭죽 터지는 소리 (팡!)
+      const bufferSize = this.context.sampleRate * 0.5; // 0.5초 버퍼
+      const buffer = this.context.createBuffer(1, bufferSize, this.context.sampleRate);
+      const data = buffer.getChannelData(0);
+      
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      const noise = this.context.createBufferSource();
+      noise.buffer = buffer;
+      
+      const filter = this.context.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1000;
+      filter.Q.value = 1;
+      
       const gain = this.context.createGain();
+      gain.gain.setValueAtTime(0, this.context.currentTime + 0.3);
+      gain.gain.linearRampToValueAtTime(0.3, this.context.currentTime + 0.35);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.5);
       
-      osc.type = 'sine';
-      osc.frequency.value = 1200;
-      gain.gain.value = 0.2;
-      
-      osc.connect(gain);
+      noise.connect(filter);
+      filter.connect(gain);
       gain.connect(this.context.destination);
       
-      osc.start();
-      gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.1);
-      osc.stop(this.context.currentTime + 0.1);
+      noise.start(this.context.currentTime + 0.3);
+      noise.stop(this.context.currentTime + 0.5);
+
+      // 박수 소리 효과
+      const claps = [];
+      const clapTimes = [0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3];
+      
+      clapTimes.forEach((time, index) => {
+        const osc = this.context.createOscillator();
+        const oscGain = this.context.createGain();
+        
+        osc.frequency.setValueAtTime(2000 + Math.random() * 500, this.context.currentTime + time);
+        oscGain.gain.setValueAtTime(0.2, this.context.currentTime + time);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + time + 0.1);
+        
+        osc.connect(oscGain);
+        oscGain.connect(this.context.destination);
+        
+        osc.start(this.context.currentTime + time);
+        osc.stop(this.context.currentTime + time + 0.1);
+        
+        claps.push({ osc, gain: oscGain });
+      });
+
+      // 반짝이는 효과음들
+      const sparkles = [];
+      const sparkleTimes = [0.4, 0.6, 0.8, 1.0, 1.2];
+      
+      sparkleTimes.forEach(time => {
+        const sparkle = this.context.createOscillator();
+        const sparkleGain = this.context.createGain();
+        
+        sparkle.frequency.setValueAtTime(2000 + Math.random() * 1000, this.context.currentTime + time);
+        sparkle.frequency.exponentialRampToValueAtTime(3000 + Math.random() * 1000, this.context.currentTime + time + 0.1);
+        
+        sparkleGain.gain.setValueAtTime(0.1, this.context.currentTime + time);
+        sparkleGain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + time + 0.2);
+        
+        sparkle.connect(sparkleGain);
+        sparkleGain.connect(this.context.destination);
+        
+        sparkle.start(this.context.currentTime + time);
+        sparkle.stop(this.context.currentTime + time + 0.2);
+        
+        sparkles.push({ osc: sparkle, gain: sparkleGain });
+      });
     }
   };
 
-  // 페이지 로드 시 효과음 초기화
-  document.addEventListener('DOMContentLoaded', () => {
-    ButtonSound.init();
-  });
+  // 자동 재생 정책 대응을 위한 이벤트 리스너
+  document.addEventListener('click', (e) => {
+    if (ButtonSound.context && ButtonSound.context.state === 'suspended') {
+      ButtonSound.context.resume();
+    }
+
+    // 시작 버튼인 경우 특별한 사운드 재생
+    if (e.target.id === 'startButton') {
+      ButtonSound.playStartSound();
+      return;
+    }
+
+    // 다른 버튼들
+    if (e.target.matches('button, .btn, .option') && !e.target.disabled) {
+      ButtonSound.playClickSound();
+    }
+  }, true);
+
+  // 초기화
+  ButtonSound.init();
 
   /* 페이지 로드 시 초기화 */
   window.onload = () => {
@@ -2499,6 +2661,24 @@
 
     updateChancesDisplay();
   };
+
+  // 게임 완료 시 축하 효과음 재생 추가
+  function showResult() {
+    elements.gameSection.style.display = 'none';
+    elements.resultSection.style.display = 'block';
+    
+    const totalQuestions = questions.length;
+    const correctAnswers = userAnswers.filter(a => a.isCorrect).length;
+    const timeSpent = formatTime(totalSeconds);
+    
+    elements.finalScore.textContent = `최종 점수: ${score}점`;
+    elements.finalTime.textContent = `소요 시간: ${timeSpent}`;
+    
+    // 축하 효과음 재생
+    ButtonSound.playCongratulations();
+    
+    clearInterval(timerInterval);
+  }
  </script>
 </body>
 </html>
