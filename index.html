@@ -32,7 +32,7 @@
           "https://github.com/hwimath2/imagrfile/blob/main/gmjsyghgs/2.png?raw=true"
         ],
         "passage": "",
-        "answer": ["1", "2"],
+        "answer": "1",
         "type": "객관식",
         "score": 10,
         "customOptions": ["\\lim_{n\\to\\infty} a_n = \\alpha", "\\lim_{n\\to\\infty} b_n = \\beta"]
@@ -336,14 +336,47 @@
       background-color: white;
       text-align: center;
       display: block;
+      box-shadow: 0 4px 20px rgba(255,105,180,0.15);
     }
+
+    .banner::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(to right, transparent, rgba(255,105,180,0.3), transparent);
+    }
+
     .banner img {
       width: 100%;
       height: auto;
       display: block;
       margin: 0;
       padding: 0;
+      border-bottom: 1px solid rgba(255,192,203,0.3);
+      filter: drop-shadow(0 2px 4px rgba(255,105,180,0.1));
     }
+
+    /* 배너 호버 효과 */
+    .banner:hover img {
+      filter: drop-shadow(0 3px 6px rgba(255,105,180,0.15));
+      transition: filter 0.3s ease;
+    }
+
+    /* 배너와 컨텐츠 사이 자연스러운 그라데이션 효과 */
+    .banner::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -10px;
+      height: 10px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+      pointer-events: none;
+    }
+
     #gameTitle {
       font-family: var(--title-font);
       font-size: 2.5em;
@@ -728,102 +761,82 @@
     /* ======================= 객관식 옵션 스타일 ======================= */
     .option {
       border: none;
-      border-radius: var(--border-radius-medium);
+      border-radius: 25px;
       cursor: pointer;
       font-weight: 500;
-      transition: all 0.15s ease;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(255,105,180,0.2);
       padding: var(--option-padding-v) var(--option-padding-h);
       font-size: var(--option-font-size);
       margin: var(--button-margin);
       position: relative;
       overflow: hidden;
-      background: radial-gradient(ellipse at 30% 30%, var(--option-color) 0%, var(--option-dark) 100%);
+      background: linear-gradient(135deg, #FF69B4, #FF8DA1);
       color: white;
       text-align: center;
-      transform: perspective(500px) rotateX(var(--option-3d-angle));
-      box-shadow:
-        0 6px 12px rgba(0,0,0,0.15),
-        0 3px 5px rgba(0,0,0,0.12),
-        inset 0 -4px 5px rgba(0,0,0,0.2),
-        inset 0 2px 4px rgba(255,255,255,0.5);
-
-      /* --- 일관된 최소 너비 적용 --- */
       min-width: var(--option-min-width);
-      /* --- 수정 완료 --- */
-    }
-
-    /* KaTeX 렌더링 요소에 대한 스타일 (필요시 추가) */
-    .option .katex {
-        font-size: var(--option-font-size); /* 버튼 폰트 크기와 맞춤 */
-        /* line-height: normal; */ /* 필요시 line-height 조정 */
-    }
-
-
-    .option::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-      top: 0;
-      left: 0;
-      z-index: 2;
-    }
-
-    .option::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 60%;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0));
-      transform: translateZ(1px);
+      font-family: var(--content-font);
     }
 
     .option:hover {
-      background: radial-gradient(ellipse at 30% 30%, var(--option-color) 30%, var(--option-dark) 100%);
-      transform: perspective(500px) rotateX(calc(var(--option-3d-angle) + 5deg)) translateY(-3px) scale(var(--option-hover-scale));
-      box-shadow:
-        0 10px 20px rgba(0,0,0,0.2),
-        0 5px 8px rgba(0,0,0,0.15),
-        inset 0 -4px 5px rgba(0,0,0,0.2),
-        inset 0 2px 4px rgba(255,255,255,0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255,105,180,0.3);
+      background: linear-gradient(135deg, #FF69B4, #FFB6C1);
     }
 
     .option.selected {
-      background: radial-gradient(ellipse at 30% 30%, var(--option-selected-color) 0%, var(--option-selected-dark) 100%);
-      transform: perspective(500px) rotateX(calc(var(--option-3d-angle) + 5deg)) scale(var(--option-selected-scale));
-      box-shadow:
-        0 8px 25px rgba(0,0,0,0.15),
-        0 5px 10px rgba(0,0,0,0.1),
-        0 0 15px rgba(255, 165, 0, 0.5),
-        inset 0 -4px 5px rgba(0,0,0,0.2),
-        inset 0 2px 4px rgba(255,255,255,0.5);
+      background: linear-gradient(135deg, #FF1493, #FF69B4);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255,105,180,0.4);
     }
 
-    /* 정답/오답 피드백 스타일 */
+    /* KaTeX 렌더링된 수식 스타일 */
+    .option .katex {
+      font-size: var(--option-font-size);
+      font-family: var(--content-font);
+    }
+
+    /* 주관식 입력 필드 스타일 */
+    .answer-input {
+      padding: var(--input-padding);
+      font-size: 1.2em;
+      border: 2px solid rgba(255,105,180,0.3);
+      border-radius: 15px;
+      width: 100%;
+      outline: none;
+      transition: all 0.3s;
+      box-shadow: 0 3px 10px rgba(255,105,180,0.1);
+      background-color: white;
+      color: #333;
+      font-family: var(--content-font);
+    }
+
+    .answer-input::placeholder {
+      color: #555;
+      font-family: var(--content-font);
+      font-size: 1.1em;
+      transition: all 0.3s;
+      opacity: 0.8;
+    }
+
+    .answer-input:focus {
+      border-color: rgba(255,105,180,0.6);
+      box-shadow: 0 5px 15px rgba(255,105,180,0.2);
+      transform: translateY(-2px);
+    }
+
+    .answer-input:focus::placeholder {
+      opacity: 0.6;
+      transform: translateX(5px);
+    }
+
+    /* 정답/오답 스타일 */
     .option.correct {
-      background: radial-gradient(ellipse at 30% 30%, var(--correct-color) 0%, var(--correct-dark) 100%);
-      transform: perspective(500px) rotateX(calc(var(--option-3d-angle) + 5deg)) scale(var(--option-selected-scale));
-      box-shadow:
-        0 8px 25px rgba(0,0,0,0.15),
-        0 5px 10px rgba(0,0,0,0.1),
-        0 0 15px rgba(46, 204, 113, 0.5),
-        inset 0 -4px 5px rgba(0,0,0,0.2),
-        inset 0 2px 4px rgba(255,255,255,0.5);
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
     }
 
     .option.incorrect {
-      background: radial-gradient(ellipse at 30% 30%, var(--incorrect-color) 0%, var(--incorrect-dark) 100%);
-      transform: perspective(500px) rotateX(calc(var(--option-3d-angle) + 5deg)) scale(var(--option-selected-scale));
-      box-shadow:
-        0 8px 25px rgba(0,0,0,0.15),
-        0 5px 10px rgba(0,0,0,0.1),
-        0 0 15px rgba(231, 76, 60, 0.5),
-        inset 0 -4px 5px rgba(0,0,0,0.2),
-        inset 0 2px 4px rgba(255,255,255,0.5);
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
     }
 
     /* ======================= 문제 영역 ======================= */
