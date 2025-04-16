@@ -22,7 +22,7 @@
           "https://github.com/hwimath2/imagrfile/blob/main/gmjsyghgs/1.png?raw=true", "https://github.com/hwimath2/imagrfile/blob/main/gmjsyghgs/2.png?raw=true"
         ],
         "passage": "",
-        "answer": "1",
+        "answer": ["1", "2"],
         "type": "객관식",
         "score": 10,
         "customOptions": ["1", "2", "3", "4"]
@@ -1771,20 +1771,25 @@
   </script>
  <script>
   /* 텍스트 설정 */
-  const START_SCREEN_TITLE = "서율아 게임을 시작해볼까?";
-  const START_BUTTON_TEXT = "게임시작";
-  const NEXT_BUTTON_TEXT = "다음문제";
-  const COMPLETE_BUTTON_TEXT = "완료";
-  const CHECK_BUTTON_TEXT = "확인";
-  const SUBMIT_BUTTON_TEXT = "전송하기";
-  const RESULT_TITLE_TEXT = "게임 종료";
+  const START_SCREEN_TITLE = "이름을 입력하고 게임을 시작하세요";  /* 시작 화면 제목 */
+  const PLAYER_NAME_PLACEHOLDER = "이름을 입력하세요";           /* 이름 입력 필드 플레이스홀더 */
+  const START_BUTTON_TEXT = "게임시작";                  /* 시작 버튼 텍스트 */
+  const NEXT_BUTTON_TEXT = "다음문제";                   /* 다음 버튼 텍스트 */
+  const COMPLETE_BUTTON_TEXT = "완료";                   /* 완료 버튼 텍스트 */
+  const CHECK_BUTTON_TEXT = "확인";                    /* 확인 버튼 텍스트 */
+  const SUBMIT_BUTTON_TEXT = "전송하기";                 /* 전송 버튼 텍스트 */
+  const RESULT_TITLE_TEXT = "게임 종료";                   /* 결과 화면 제목 */
+
+  const SUCCESS_MESSAGE = "전송 완료";  /* 성공 메시지 */
+  const ERROR_MESSAGE = "전송 실패";      /* 오류 메시지 */
+  const NETWORK_ERROR = "네트워크 오류";   /* 네트워크 오류 메시지 */
 
   /* 게임 설정 */
-  const gameTitle = gameConfig.gameTitle;
-  const questions = gameConfig.questions;
-  const defaultScore = gameConfig.defaultScore || 10;
-  const bannerURL = gameConfig.bannerURL || "";
-  const randomizeQuestions = gameConfig.randomizeQuestions || false;
+  const gameTitle = gameConfig.gameTitle;      /* 게임 제목 */
+  const questions = gameConfig.questions;      /* 모든 문제 배열 */
+  const defaultScore = gameConfig.defaultScore || 10; /* 기본 점수 */
+  const bannerURL = gameConfig.bannerURL || "";      /* 배너 이미지 URL */
+  const randomizeQuestions = gameConfig.randomizeQuestions || false; /* 문제 순서 랜덤화 여부 */
 
   /* 배너 초기화 - 즉시 실행 */
   if (gameConfig.bannerURL) {
@@ -1888,15 +1893,15 @@
   function createCompletionParticles() {
     const container = document.querySelector('.progress-container');
     const rect = container.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;          /* 중앙 X 좌표 */
-    const centerY = rect.top + rect.height / 2;         /* 중앙 Y 좌표 */
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
 
-    /* 파티클 생성 */
-    for (let i = 0; i < parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-count')); i++) {
+    const particleCount = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-count'));
+    
+    for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle';
 
-      /* 랜덤 색상 설정 */
       const colors = [
         getComputedStyle(document.documentElement).getPropertyValue('--particle-color-1').trim(),
         getComputedStyle(document.documentElement).getPropertyValue('--particle-color-2').trim(),
@@ -1906,14 +1911,12 @@
       ];
       particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-      /* 랜덤 크기 설정 */
       const minSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-size-min'));
       const maxSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-size-max'));
       const size = Math.random() * (maxSize - minSize) + minSize;
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
 
-      /* 랜덤 방향 및 거리 설정 */
       const angle = Math.random() * Math.PI * 2;
       const minDistance = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-distance-min'));
       const maxDistance = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--particle-distance-max'));
@@ -1929,7 +1932,6 @@
 
       container.appendChild(particle);
 
-      /* 애니메이션 후 파티클 제거 */
       const animationDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--particle-animation-duration')) * 1000 + 500;
       setTimeout(() => { particle.remove(); }, animationDuration);
     }
@@ -1938,87 +1940,14 @@
   // 완료 애니메이션 실행
   function triggerCompletionAnimation() {
     return new Promise(resolve => {
-      elements.progressBar.style.width = "100%";                       /* 진행 바 100%로 설정 */
-      
-      // 완료 효과음 재생 - 메인 멜로디
-      const playMainMelody = () => {
-        if (!window.audioContext) return;
-        
-        const mainNotes = [523.25, 659.25, 783.99, 1046.50];
-        mainNotes.forEach((freq, i) => {
-          const osc = window.audioContext.createOscillator();
-          const gain = window.audioContext.createGain();
-          
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          gain.gain.value = 0.3;
-          
-          osc.connect(gain);
-          gain.connect(window.audioContext.destination);
-          
-          const startTime = window.audioContext.currentTime + (i * 0.12);
-          osc.start(startTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
-          osc.stop(startTime + 0.5);
-        });
-      };
-      
-      // 반짝이는 효과음
-      const playSparkleSound = () => {
-        if (!window.audioContext) return;
-        
-        const sparkleNotes = [2093.00, 2637.02, 3135.96];
-        sparkleNotes.forEach((freq, i) => {
-          const osc = window.audioContext.createOscillator();
-          const gain = window.audioContext.createGain();
-          
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          gain.gain.value = 0.2;
-          
-          osc.connect(gain);
-          gain.connect(window.audioContext.destination);
-          
-          const startTime = window.audioContext.currentTime + (i * 0.08);
-          osc.start(startTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
-          osc.stop(startTime + 0.4);
-        });
-      };
-      
-      // 종료 화음
-      const playFinalChord = () => {
-        if (!window.audioContext) return;
-        
-        const finalChord = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-        finalChord.forEach(freq => {
-          const osc = window.audioContext.createOscillator();
-          const gain = window.audioContext.createGain();
-          
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          gain.gain.value = 0.2;
-          
-          osc.connect(gain);
-          gain.connect(window.audioContext.destination);
-          
-          osc.start(window.audioContext.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, window.audioContext.currentTime + 0.8);
-          osc.stop(window.audioContext.currentTime + 1);
-        });
-      };
+      elements.progressBar.style.width = "100%";
       
       setTimeout(() => {
-        elements.progressBar.classList.add('completed-animation');   /* 애니메이션 클래스 추가 */
-        createCompletionParticles();                                /* 파티클 효과 생성 */
-        
-        // 순차적으로 효과음 재생
-        playMainMelody();
-        setTimeout(playSparkleSound, 500);
-        setTimeout(playFinalChord, 1000);
+        elements.progressBar.classList.add('completed-animation');
+        createCompletionParticles();
         
         const animationDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--complete-animation-duration')) * 1000 + 300;
-        setTimeout(() => { resolve(); }, animationDuration);        /* 애니메이션 완료 후 Promise 해결 */
+        setTimeout(() => { resolve(); }, animationDuration);
       }, 300);
     });
   }
@@ -2109,7 +2038,10 @@
             .replace(/\\Walpha/g, '\\alpha')
             .replace(/\\Wbeta/g, '\\beta');
 
-          optDiv.innerHTML = `$${processedText}$`;
+          // 내부 span 엘리먼트 생성
+          const span = document.createElement('span');
+          span.innerHTML = `$${processedText}$`;
+          optDiv.appendChild(span);
           
           // MathJax 수동 렌더링 트리거
           if (typeof MathJax !== 'undefined') {
@@ -2422,64 +2354,6 @@
     }
   });
 
-  // 기본 버튼 클릭음 생성
-  function createButtonSound() {
-    if (!window.audioContext) return;
-    
-    const osc = window.audioContext.createOscillator();
-    const gain = window.audioContext.createGain();
-    
-    osc.type = 'sine';
-    osc.frequency.value = 1200;
-    gain.gain.value = 0.2;
-    
-    osc.connect(gain);
-    gain.connect(window.audioContext.destination);
-    
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.001, window.audioContext.currentTime + 0.1);
-    osc.stop(window.audioContext.currentTime + 0.1);
-  }
-
-  // 모든 클릭 가능한 요소에 효과음 추가
-  function addSoundToClickables() {
-    // 일반 버튼들
-    document.querySelectorAll('button').forEach(button => {
-      button.addEventListener('click', () => {
-        if (!button.disabled) {
-          createButtonSound();
-        }
-      });
-    });
-
-    // 객관식 선택지
-    document.querySelectorAll('.option').forEach(option => {
-      option.addEventListener('click', () => {
-        if (!option.classList.contains('disabled')) {
-          createButtonSound();
-        }
-      });
-    });
-  }
-
-  // DOM이 변경될 때마다 새로운 요소에 효과음 추가
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.addedNodes.length) {
-        addSoundToClickables();
-      }
-    });
-  });
-
-  // 문서 전체 변경 감지 시작
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  // 초기 요소들에 효과음 추가
-  addSoundToClickables();
-
   /* 시작 버튼 이벤트 */
   elements.startButton.addEventListener('click', () => {
     player = "박서율";  // 플레이어 이름을 '박서율'로 고정
@@ -2603,237 +2477,78 @@
     elements.serverMessage.className = 'server-message';
   }
 
+  // 버튼 효과음 객체
+  const ButtonSound = {
+    context: null,
+
+    init() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.context = new AudioContext();
+
+        // document 레벨에서 모든 클릭 이벤트 감지
+        document.addEventListener('click', (e) => {
+          // 모든 가능한 버튼 선택자 포함
+          if ((e.target.matches('button') || 
+              e.target.matches('.btn') || 
+              e.target.matches('.option') || 
+              e.target.matches('#startButton') || 
+              e.target.matches('#nextButton') || 
+              e.target.matches('#checkButton') || 
+              e.target.matches('#submitButton')) && 
+              !e.target.disabled) {
+            this.play();
+          }
+        }, true);
+
+        // 자동 재생 정책 대응
+        document.addEventListener('click', () => {
+          if (this.context.state === 'suspended') {
+            this.context.resume();
+          }
+        }, { once: true });
+
+      } catch(e) {
+        console.warn('Web Audio API is not supported in this browser');
+      }
+    },
+
+    play() {
+      if (!this.context) return;
+      
+      const osc = this.context.createOscillator();
+      const gain = this.context.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.value = 1200;
+      gain.gain.value = 0.2;
+      
+      osc.connect(gain);
+      gain.connect(this.context.destination);
+      
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.1);
+      osc.stop(this.context.currentTime + 0.1);
+    }
+  };
+
+  // 페이지 로드 시 효과음 초기화
+  document.addEventListener('DOMContentLoaded', () => {
+    ButtonSound.init();
+  });
+
   /* 페이지 로드 시 초기화 */
   window.onload = () => {
-    // 게임 타이틀은 일반 텍스트로 설정 (MathJax 렌더링 없음)
     document.getElementById("pageTitle").textContent = gameTitle;
     elements.gameTitle.textContent = gameTitle;
 
-    // Apply text variables from JS consts to elements
-    elements.startButton.textContent = START_BUTTON_TEXT;
-    elements.playerName.placeholder = PLAYER_NAME_PLACEHOLDER;
-    document.querySelector('#startSection .start-title').textContent = START_SCREEN_TITLE; // Assuming the title structure
-    elements.nextButton.textContent = NEXT_BUTTON_TEXT; // Initial state
-    elements.submitButton.textContent = SUBMIT_BUTTON_TEXT;
-    document.querySelector('#resultSection .result-title').textContent = RESULT_TITLE_TEXT; // Assuming the title structure
-
-    // 배너 설정
     if (bannerURL) {
       elements.banner.style.display = "block";
       elements.banner.innerHTML = `<img src="${bannerURL}" alt="배너">`;
     }
 
-    // Set initial state for chance indicators
     updateChancesDisplay();
   };
  </script>
-
-  <!-- 게임 효과 스크립트 -->
-  <script>
-    // 게임 효과음 관리
-    const GameSounds = {
-      context: null,
-      sounds: {},
-
-      init() {
-        try {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.context = new AudioContext();
-          this.createSounds();
-        } catch(e) {
-          console.warn('Web Audio API is not supported in this browser');
-        }
-      },
-
-      createSounds() {
-        if (!this.context) return;
-        
-        // 클릭음 - 더 선명하고 경쾌한 소리로 변경
-        this.sounds.click = this.createSound(
-          [1200, 1800], // 높은 주파수로 변경
-          0.08, // 더 짧은 지속시간
-          0.4,
-          'sine'
-        );
-        
-        // 정답음
-        this.sounds.correct = this.createSound(
-          [523.25, 659.25, 783.99], 
-          0.3, 
-          0.5
-        );
-        
-        // 오답음
-        this.sounds.incorrect = this.createSound(
-          [220, 207.65], 
-          0.2, 
-          0.3, 
-          'sawtooth'
-        );
-        
-        // 완료음 - 화려한 축하 효과음으로 변경
-        this.sounds.complete = () => {
-          if (!this.context) return;
-          
-          // 메인 멜로디 (상승하는 화음)
-          const mainNotes = [523.25, 659.25, 783.99, 1046.50];
-          mainNotes.forEach((freq, i) => {
-            const osc = this.context.createOscillator();
-            const gain = this.context.createGain();
-            
-            osc.type = 'sine';
-            osc.frequency.value = freq;
-            gain.gain.value = 0.3;
-            
-            osc.connect(gain);
-            gain.connect(this.context.destination);
-            
-            const startTime = this.context.currentTime + (i * 0.12);
-            osc.start(startTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
-            osc.stop(startTime + 0.5);
-          });
-          
-          // 반짝이는 효과음 (높은 주파수)
-          setTimeout(() => {
-            const sparkleNotes = [2093.00, 2637.02, 3135.96];
-            sparkleNotes.forEach((freq, i) => {
-              const osc = this.context.createOscillator();
-              const gain = this.context.createGain();
-              
-              osc.type = 'sine';
-              osc.frequency.value = freq;
-              gain.gain.value = 0.2;
-              
-              osc.connect(gain);
-              gain.connect(this.context.destination);
-              
-              const startTime = this.context.currentTime + (i * 0.08);
-              osc.start(startTime);
-              gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
-              osc.stop(startTime + 0.4);
-            });
-          }, 500);
-          
-          // 종료 화음
-          setTimeout(() => {
-            const finalChord = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-            finalChord.forEach(freq => {
-              const osc = this.context.createOscillator();
-              const gain = this.context.createGain();
-              
-              osc.type = 'sine';
-              osc.frequency.value = freq;
-              gain.gain.value = 0.2;
-              
-              osc.connect(gain);
-              gain.connect(this.context.destination);
-              
-              osc.start(this.context.currentTime);
-              gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.8);
-              osc.stop(this.context.currentTime + 1);
-            });
-          }, 1000);
-        };
-      },
-
-      createSound(frequencies, duration, volume = 0.5, type = 'sine') {
-        return () => {
-          if (!this.context) return;
-          
-          frequencies.forEach((freq, i) => {
-            const oscillator = this.context.createOscillator();
-            const gainNode = this.context.createGain();
-            
-            oscillator.type = type;
-            oscillator.frequency.value = freq;
-            gainNode.gain.value = volume;
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(this.context.destination);
-            
-            const startTime = this.context.currentTime + (i * 0.1);
-            oscillator.start(startTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-            oscillator.stop(startTime + duration + 0.1);
-          });
-        };
-      },
-
-      play(soundName) {
-        if (this.sounds[soundName]) {
-          this.sounds[soundName]();
-        }
-      }
-    };
-
-    // 파티클 효과
-    function createParticles(x, y, color, count = 10) {
-      for (let i = 0; i < count; i++) {
-        const particle = document.createElement('div');
-        document.body.appendChild(particle);
-        
-        particle.style.cssText = `
-          position: fixed;
-          width: ${Math.random() * 8 + 4}px;
-          height: ${Math.random() * 8 + 4}px;
-          background-color: ${color};
-          border-radius: 50%;
-          pointer-events: none;
-          z-index: 9999;
-        `;
-        
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = Math.random() * 60 + 40;
-        const lifetime = Math.random() * 600 + 400;
-        
-        particle.animate([
-          {
-            transform: `translate(${x}px, ${y}px)`,
-            opacity: 1
-          },
-          {
-            transform: `translate(${x + Math.cos(angle) * velocity}px, ${y + Math.sin(angle) * velocity}px)`,
-            opacity: 0
-          }
-        ], {
-          duration: lifetime,
-          easing: 'cubic-bezier(0, .9, .57, 1)'
-        });
-        
-        setTimeout(() => particle.remove(), lifetime);
-      }
-    }
-
-    // 게임 효과 초기화
-    document.addEventListener('DOMContentLoaded', function() {
-      GameSounds.init();
-      
-      // 버튼 효과 추가
-      document.body.addEventListener('click', function(e) {
-        if (e.target.matches('.btn, .option')) {
-          const rect = e.target.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
-          GameSounds.play('click');
-          createParticles(e.clientX, e.clientY, '#FF69B4');
-        }
-      });
-      
-      // 정답/오답 효과 강화
-      const originalHandleOptionClick = window.handleOptionClick;
-      window.handleOptionClick = function(e) {
-        const prevSubmitted = window.answerSubmitted;
-        originalHandleOptionClick.call(this, e);
-        
-        if (!prevSubmitted && window.answerSubmitted) {
-          const isCorrect = e.currentTarget.classList.contains('correct');
-          GameSounds.play(isCorrect ? 'correct' : 'incorrect');
-          createParticles(e.clientX, e.clientY, isCorrect ? '#2ecc71' : '#e74c3c', 15);
-        }
-      };
-    });
-  </script>
 </body>
 </html>
