@@ -11,7 +11,7 @@
   <script>
   /* 게임 설정 및 문제 데이터 */
   const gameConfig = {
-    "gameTitle": "수열의 극한에 대한 기본 성질",
+    "gameTitle": "율이버전 테스트",
     "defaultScore": 10,
     "bannerURL": "https://github.com/hwimath2/imagrfile/blob/main/%EC%A1%B0%EC%9D%B4%EB%B0%B0%EB%84%882.jpg?raw=true",
     "randomizeQuestions": false,
@@ -532,29 +532,17 @@
       z-index: 1;
       overflow: hidden;
     }
-    #startSection::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 60%);
-      animation: pulse-start 5s infinite linear;
-      z-index: -1;
-    }
-    @keyframes pulse-start {
-      0% { transform: scale(0.95); opacity: 0.7; }
-      50% { transform: scale(1.05); opacity: 0.3; }
-      100% { transform: scale(0.95); opacity: 0.7; }
-    }
+
     .start-title {
-      font-size: 28px;
-      margin-bottom: 30px;
+      font-size: 2.2em;
+      margin-bottom: 40px;
       position: relative;
       display: inline-block;
-      color: var(--secondary-color);
+      color: var(--primary-color);
+      font-family: var(--title-font);
+      text-shadow: 2px 2px 4px rgba(255,105,180,0.2);
     }
+
     .start-title::after {
       content: '';
       position: absolute;
@@ -562,8 +550,9 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: linear-gradient(90deg, transparent, var(--next-button-color), transparent);
+      background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
     }
+
     .input-field {
       padding: var(--input-padding);
       font-size: var(--input-font-size);
@@ -662,23 +651,21 @@
       filter: grayscale(40%) brightness(95%);  /* hover 시에도 동일한 효과 유지 */
     }
     #startButton {
-      background-color: var(--start-button-color);
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,0.1),
-        0 2px 0 rgba(0,0,0,0.1),
-        0 4px 0 var(--start-button-dark),
-        0 6px 0 rgba(0,0,0,0.1),
-        0 8px 0 rgba(0,0,0,0.1),
-        0 0 10px rgba(0,0,0,0.2);
+      font-size: 1.3em;
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #FF69B4, #FF8DA1);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: var(--content-font);
+      box-shadow: 0 4px 15px rgba(255,105,180,0.3);
     }
     #startButton:hover {
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,0.1),
-        0 3px 0 rgba(0,0,0,0.1),
-        0 5px 0 var(--start-button-dark),
-        0 7px 0 rgba(0,0,0,0.1),
-        0 9px 0 rgba(0,0,0,0.1),
-        0 0 12px rgba(0,0,0,0.2);
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, #FF69B4, #FFB6C1);
+      box-shadow: 0 6px 20px rgba(255,105,180,0.4);
     }
     #nextButton {
       background-color: var(--next-button-color);
@@ -1429,9 +1416,8 @@
   </div>
   <div class="container">
     <div id="startSection">
-      <h2 class="start-title">이름을 입력하고 게임을 시작하세요</h2>
+      <h2 class="start-title">서율아 게임을 시작해볼까?</h2>
       <div>
-        <input class="input-field" id="playerName" placeholder="이름을 입력하세요" type="text"/>
         <button class="btn" id="startButton">게임시작</button>
       </div>
     </div>
@@ -2064,13 +2050,7 @@
 
   /* 시작 버튼 이벤트 */
   elements.startButton.addEventListener('click', () => {
-    const name = elements.playerName.value.trim();
-    if(name === "") {
-        alert("이름을 입력해주세요!"); // Provide feedback
-        return;
-    } /* 이름이 입력되지 않으면 시작하지 않음 */
-
-    player = name;
+    player = "박서율";  // 플레이어 이름을 '박서율'로 고정
     elements.startSection.style.display = "none";
     elements.gameSection.style.display = "block";
     timerFunctions.start();       /* 타이머 시작 */
