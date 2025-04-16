@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta name="theme-color" content="#FF69B4">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
   <title id="pageTitle"></title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Gaegu:wght@300;400;700&family=Dongle:wght@300;400;700&display=swap" rel="stylesheet">
   
@@ -1026,6 +1028,48 @@
         inset 0 -4px 8px rgba(0,0,0,0.2),
         inset 0 2px 4px rgba(255,255,255,0.5);
       transform: translateY(0);
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-touch-callout: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      outline: none;
+    }
+
+    .option:active {
+      transform: scale(0.98);
+      opacity: 0.8;
+      background: linear-gradient(to bottom, #FF1493, #FF69B4);
+    }
+
+    .btn, button, .option, .answer-input, .image-container {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .question-image, .image-container, .question-images {
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .question-image:hover, 
+    .question-image:active, 
+    .question-image:focus {
+      transform: none;
+      box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+    }
+
+    @media (hover: none) {
+      .option:active,
+      .btn:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+      }
+      
+      .question-image:hover {
+        transform: none;
+        box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+      }
     }
 
     .option::before {
@@ -1656,7 +1700,7 @@
     .loading-spinner {
       display: none; /* Initially hidden */
       position: fixed;
-      top: 0; left: 0;
+      top: 0 left: 0;
       width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.5);
       z-index: 9999;
