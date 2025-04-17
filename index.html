@@ -390,13 +390,6 @@
       --option-selected-scale: 1.1;
       --option-hover-scale: 1.05;
 
-      /* ----- 주관식 피드백 효과 설정 ----- */
-      --correct-bg-color: rgba(46,204,113,0.2);     /* 정답 배경색 (20% 투명도) */
-      --correct-glow-color: rgba(46,204,113,0.5);   /* 정답 테두리 빛남 효과 (50% 투명도) */
-      --incorrect-bg-color: rgba(231,76,60,0.2);   /* 오답 배경색 (20% 투명도) */
-      --incorrect-glow-color: rgba(231,76,60,0.5);  /* 오답 테두리 빛남 효과 (50% 투명도) */
-      --answer-glow-intensity: 15px;            /* 테두리 빛남 효과 강도 */
-
       /* ----- 게임 플레이 요소 ----- */
       --progress-height: 20px;                /* 진행률 게이지 높이 */
       --progress-border-radius: 10px;         /* 진행률 게이지 테두리 둥글기 */
@@ -412,17 +405,6 @@
       --chance-wave-duration: 2s;         /* 기회 표시기 물결 애니메이션 지속 시간 */
       --chance-color: #2ecc71;            /* 남은 기회 표시 색상 */
       --chance-lost-color: #ecf0f1;       /* 잃은 기회 표시 색상 */
-
-      /* ----- 진행 게이지 설정 ----- */
-      --progress-height: 15px;            /* 진행 게이지 높이 */
-      --progress-border-radius: 8px;      /* 진행 게이지 테두리 둥글기 */
-      --progress-left-color: #00D2F7;      /* 진행 게이지 왼쪽 색상 */
-      --progress-right-color: #7DF9AA;     /* 진행 게이지 오른쪽 색상 */
-      --progress-bg-color: rgba(236,240,241,0.8); /* 진행 게이지 배경색 */
-      --progress-shine: rgba(255,255,255,0.35); /* 진행 게이지 반짝임 효과 색상 */
-      --progress-animation-duration: 0.7s; /* 진행 게이지 애니메이션 지속 시간 */
-      --progress-shine-duration: 2s; /* 진행 게이지 반짝임 애니메이션 지속 시간 */
-      --progress-gradient: linear-gradient(90deg, var(--progress-left-color) 0%, var(--progress-right-color) 100%); /* 진행 게이지 그라데이션 */
 
       /* ----- 완료 애니메이션 설정 ----- */
       --complete-animation-duration: 1.5s; /* 완료 애니메이션 지속 시간 */
@@ -1439,16 +1421,16 @@
 
     /* 주관식 정답/오답 피드백 스타일 - 통일된 방식 */
     .answer-input.correct {
-      background-color: rgba(46,204,113,0.15) !important; /* 배경색 투명도 증가 */
-      border-color: rgba(46,204,113,0.6) !important; /* 테두리 투명도 증가 */
-      box-shadow: 0 0 20px rgba(46,204,113,0.4) !important; /* 그림자 투명도 증가 */
+      background-color: rgba(46,204,113,0.1) !important; /* 배경색 투명도 증가 */
+      border-color: rgba(46,204,113,0.3) !important; /* 테두리 투명도 증가 */
+      box-shadow: 0 0 15px rgba(46,204,113,0.2) !important; /* 그림자 투명도 증가 */
       animation: correctGlow 1.5s infinite alternate !important;
     }
 
     .answer-input.incorrect {
-      background-color: rgba(231,76,60,0.15) !important; /* 배경색 투명도 증가 */
-      border-color: rgba(231,76,60,0.6) !important; /* 테두리 투명도 증가 */
-      box-shadow: 0 0 20px rgba(231,76,60,0.4) !important; /* 그림자 투명도 증가 */
+      background-color: rgba(231,76,60,0.1) !important; /* 배경색 투명도 증가 */
+      border-color: rgba(231,76,60,0.3) !important; /* 테두리 투명도 증가 */
+      box-shadow: 0 0 15px rgba(231,76,60,0.2) !important; /* 그림자 투명도 증가 */
       animation: incorrectGlow 1.5s infinite alternate !important;
     }
 
@@ -2039,8 +2021,6 @@
   </div>
   <script>
   /* 텍스트 설정 */
-  const START_SCREEN_TITLE = "이름을 입력하고 게임을 시작하세요";
-  const PLAYER_NAME_PLACEHOLDER = "이름을 입력하세요";           /* 이름 입력 필드 플레이스홀더 */
   const START_BUTTON_TEXT = "게임시작";                  /* 시작 버튼 텍스트 */
   const NEXT_BUTTON_TEXT = "다음문제";                   /* 다음 버튼 텍스트 */
   const COMPLETE_BUTTON_TEXT = "완료";                   /* 완료 버튼 텍스트 */
